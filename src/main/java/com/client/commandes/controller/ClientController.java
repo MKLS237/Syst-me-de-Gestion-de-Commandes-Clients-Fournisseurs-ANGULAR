@@ -55,6 +55,16 @@ public class ClientController {
             return ResponseEntity.notFound().build();
         }
     }
+    @Operation(summary = "Mettre à jour un client")
+    @PutMapping("/{id}")
+    public ResponseEntity<Client> updateClient(@PathVariable Long id, @RequestBody Client clientDetails) {
+        try {
+            Client updatedClient = clientService.updateClient(id, clientDetails);
+            return ResponseEntity.ok(updatedClient);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Supprimer un client")

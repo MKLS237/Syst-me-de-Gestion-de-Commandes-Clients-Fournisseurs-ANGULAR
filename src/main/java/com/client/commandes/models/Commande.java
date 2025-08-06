@@ -22,7 +22,7 @@ public class Commande {
 
     private String designation;
 
-    private int quantite;
+    private double quantite;
 
     private double prixUnitaire;
 
@@ -47,7 +47,7 @@ public class Commande {
     public Commande() {
     }
 
-    public Commande(Long id, String designation, int quantite, double prixUnitaire, double prixTotal, LocalDate dateCommande, LocalDate dateLivraison, StatutCommande statut, Client client) {
+    public Commande(Long id, String designation, double quantite, double prixUnitaire, double prixTotal, LocalDate dateCommande, LocalDate dateLivraison, StatutCommande statut, Client client) {
         this.id = id;
         this.designation = designation;
         this.quantite = quantite;
@@ -75,11 +75,11 @@ public class Commande {
         this.designation = designation;
     }
 
-    public int getQuantite() {
+    public double getQuantite() {
         return quantite;
     }
 
-    public void setQuantite(int quantite) {
+    public void setQuantite(double quantite) {
         this.quantite = quantite;
     }
 

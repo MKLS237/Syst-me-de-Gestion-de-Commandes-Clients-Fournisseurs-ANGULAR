@@ -29,7 +29,8 @@ public class CommandeService {
     }
 
 
-    public Commande createCommande(Long clientId, CommandeDto dto) {
+    public Commande createCommande(CommandeDto dto) {
+        Long clientId = dto.getClient().getId();
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("Client non trouvé"));
 
@@ -49,7 +50,8 @@ public class CommandeService {
         Commande existing = commandeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Commande non trouvée"));
 
-        Client client = clientRepository.findById(dto.getClientId())
+        Long clientId = dto.getClient().getId();
+        Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("Client non trouvé"));
 
         StatutCommande previousStatus = existing.getStatut();

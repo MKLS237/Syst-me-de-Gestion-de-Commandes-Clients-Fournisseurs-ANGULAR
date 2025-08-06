@@ -30,14 +30,11 @@ public class CommandeController {
         this.commandeService = commandeService;
     }
 
-    @PostMapping("/{clientId}")
+    @PostMapping
     @Operation(summary = "Créer une commande pour un client")
-    public ResponseEntity<Commande> createCommande(
-            @PathVariable Long clientId,
-            @RequestBody CommandeDto dto) {
-
-        Commande created = commandeService.createCommande(clientId, dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<CommandeDto> createCommande(@RequestBody CommandeDto dto) {
+        Commande created = commandeService.createCommande(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(CommandeMapper.toDto(created));
     }
 
 

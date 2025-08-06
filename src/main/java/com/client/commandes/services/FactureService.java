@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
 @Service
-public class    FactureService {
+public class FactureService {
 
     private final FactureRepository factureRepository;
     private final CommandeRepository commandeRepository;
@@ -26,7 +26,7 @@ public class    FactureService {
         this.commandeRepository = commandeRepository;
     }
 
-    // ✅ Générer une facture pour une commande
+    // Générer une facture pour une commande
     public Facture generateFacture(Long commandeId) {
         Commande commande = commandeRepository.findById(commandeId)
                 .orElseThrow(() -> new EntityNotFoundException("Commande non trouvée"));
@@ -41,22 +41,28 @@ public class    FactureService {
         return factureRepository.save(facture);
     }
 
-    // ✅ Lister toutes les factures
+    // Lister toutes les factures
     public List<Facture> getAll() {
-        return factureRepository.findAll();
+        return factureRepository.findAll().stream()
+                .peek(f -> {
+                    if (f.getCommande() != null) {
+                        f.getCommande().getClient().getNom(); // Force chargement lazy
+                    }
+                })
+                .collect(Collectors.toList());
     }
 
-    // ✅ Récupérer une facture par ID
+    // Récupérer une facture par ID
     public Optional<Facture> findById(Long id) {
         return factureRepository.findById(id);
     }
 
-    // ✅ Lister les factures d'un client
+    // Lister les factures d'un client
     public List<Facture> findByClientId(Long clientId) {
         return factureRepository.findByClientId(clientId);
     }
 
-    // ✅ Mettre à jour le statut d’une facture
+    // Mettre à jour le statut d’une facture (mise à jour partielle, méthode PATCH)
     public Facture updateStatut(Long id, StatutFacture statut) {
         Facture facture = factureRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Facture non trouvée"));
@@ -65,10 +71,25 @@ public class    FactureService {
         return factureRepository.save(facture);
     }
 
-    // ✅ Supprimer une facture
+    // Mettre à jour une facture complète (méthode PUT si besoin)
+    public Facture updateFacture(Long id, Facture updatedFacture) {
+        Facture existing = factureRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Facture non trouvée"));
+
+        // Ici tu mets à jour tous les champs nécessaires, par ex :
+        existing.setStatut(updatedFacture.getStatut());
+        existing.setMontantTotal(updatedFacture.getMontantTotal());
+        // etc.
+
+        return factureRepository.save(existing);
+    }
+
+    // Supprimer une facture
     public void deleteFacture(Long id) {
         factureRepository.deleteById(id);
     }
+
+    // Statistiques globales
     public Map<String, Object> getGlobalStats() {
         List<Facture> factures = factureRepository.findAll();
 
@@ -99,11 +120,13 @@ public class    FactureService {
         return stats;
     }
 
+    // Invalider une facture par ID commande
     public void invalidateFactureByCommandeId(Long commandeId) {
         Optional<Facture> facture = factureRepository.findByCommandeId(commandeId);
         facture.ifPresent(factureRepository::delete);
     }
 
+    // Statistiques par client
     public Map<String, Object> getStatsByClient(Long clientId) {
         List<Facture> factures = factureRepository.findByClientId(clientId);
 

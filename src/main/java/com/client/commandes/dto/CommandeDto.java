@@ -1,12 +1,14 @@
 package com.client.commandes.dto;
 
+import com.client.commandes.models.Client;
+
 import java.time.LocalDate;
 
 public class CommandeDto {
     private Long id;
-    private Long clientId;
+    private Client client; // Remplace clientId
     private String designation;
-    private int quantite;
+    private double quantite;
     private double prixUnitaire;
     private double prixTotal;
     private String statut;
@@ -21,12 +23,12 @@ public class CommandeDto {
         this.id = id;
     }
 
-    public Long getClientId() {
-        return clientId;
+    public Client getClient() {
+        return client;
     }
 
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public String getDesignation() {
@@ -37,11 +39,11 @@ public class CommandeDto {
         this.designation = designation;
     }
 
-    public int getQuantite() {
+    public double getQuantite() {
         return quantite;
     }
 
-    public void setQuantite(int quantite) {
+    public void setQuantite(double quantite) {
         this.quantite = quantite;
     }
 

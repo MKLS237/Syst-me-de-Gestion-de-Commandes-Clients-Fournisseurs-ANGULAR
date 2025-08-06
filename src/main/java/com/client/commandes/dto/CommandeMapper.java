@@ -5,13 +5,19 @@ import com.client.commandes.models.Commande;
 import com.client.commandes.models.StatutCommande;
 
 import java.time.LocalDate;
-
 public class CommandeMapper {
 
     public static CommandeDto toDto(Commande commande) {
         CommandeDto dto = new CommandeDto();
         dto.setId(commande.getId());
-        dto.setClientId(commande.getClient().getId());
+
+        // On mappe aussi le client
+        Client clientDto = new Client();
+        clientDto.setId(commande.getClient().getId());
+        clientDto.setNom(commande.getClient().getNom());
+        clientDto.setPrenom(commande.getClient().getPrenom());
+        dto.setClient(clientDto);
+
         dto.setDesignation(commande.getDesignation());
         dto.setQuantite(commande.getQuantite());
         dto.setPrixUnitaire(commande.getPrixUnitaire());
