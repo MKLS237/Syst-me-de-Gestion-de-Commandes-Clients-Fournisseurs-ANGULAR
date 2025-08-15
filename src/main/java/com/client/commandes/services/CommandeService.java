@@ -1,6 +1,7 @@
 package com.client.commandes.services;
 
 import com.client.commandes.dto.CommandeDto;
+import com.client.commandes.dto.CommandeJourStatsDTO;
 import com.client.commandes.dto.CommandeMapper;
 import com.client.commandes.models.Client;
 import com.client.commandes.models.Commande;
@@ -8,11 +9,14 @@ import com.client.commandes.models.StatutCommande;
 import com.client.commandes.repository.ClientRepository;
 import com.client.commandes.repository.CommandeRepository;
 import com.client.commandes.repository.FactureRepository;
+import com.client.commandes.repository.ProduitFournisseurRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 @Service
 public class CommandeService {
@@ -20,12 +24,16 @@ public class CommandeService {
     private final CommandeRepository commandeRepository;
     private final ClientRepository clientRepository;
     private final FactureRepository factureRepository;
+    private final ProduitFournisseurRepository produitFournisseurRepository;
+    private final FactureService factureService;
  
 
-    public CommandeService(CommandeRepository commandeRepository, ClientRepository clientRepository, FactureRepository factureRepository) {
+    public CommandeService(CommandeRepository commandeRepository, ClientRepository clientRepository,ProduitFournisseurRepository produitFournisseurRepository, FactureRepository factureRepository, FactureService factureService ) {
         this.commandeRepository = commandeRepository;
         this.clientRepository = clientRepository;
         this.factureRepository = factureRepository;
+        this.factureService = factureService;
+        this.produitFournisseurRepository = produitFournisseurRepository;
     }
 
 
@@ -60,13 +68,13 @@ public class CommandeService {
         updated.setId(id);
         Commande saved = commandeRepository.save(updated);
 
-        FactureService factureService = null;
+
         if (!previousStatus.name().contains("LIVREE") && updated.getStatut().name().contains("LIVREE")) {
             // Générer la facture
-            factureService.generateFacture(saved.getId());
+            this.factureService.generateFacture(saved.getId());
         } else if (previousStatus.name().contains("LIVREE") && updated.getStatut().equals(StatutCommande.NON_LIVREE)) {
             // Supprimer la facture existante
-            factureService.invalidateFactureByCommandeId(saved.getId());
+            this.factureService.invalidateFactureByCommandeId(saved.getId());
         }
 
         return saved;
@@ -77,7 +85,41 @@ public class CommandeService {
     }
 
     public Map<String, Object> getCommandeStats(LocalDate startDate, LocalDate endDate) {
-        List<Commande> commandes;
+        if (startDate == null || endDate == null) {
+            startDate = LocalDate.now().minusDays(7);
+            endDate = LocalDate.now();
+        }
+        List<Commande> commandes = commandeRepository.findByDateCommandeBetween(startDate, endDate);
+        // Grouper par date
+        Map<LocalDate, List<Commande>> groupByDate = commandes.stream()
+                .collect(Collectors.groupingBy(Commande::getDateCommande));
+
+        List<CommandeJourStatsDTO> statsParJour = new ArrayList<>();
+
+        for (Map.Entry<LocalDate, List<Commande>> entry : groupByDate.entrySet()) {
+            LocalDate date = entry.getKey();
+            List<Commande> commandesDuJour = entry.getValue();
+
+            double totalVentes = commandesDuJour.stream()
+                    .mapToDouble(Commande::getPrixTotal)
+                    .sum();
+
+
+            double totalCout = commandesDuJour.stream()
+                    .mapToDouble(c -> {
+                        return produitFournisseurRepository.findByNomProduitIgnoreCase(c.getDesignation())
+                                .map(pf -> pf.getPrixUnitaire() * c.getQuantite())
+                                .orElse(0.0);
+                    })
+                    .sum();
+
+            double benefice = totalVentes - totalCout;
+
+            statsParJour.add(new CommandeJourStatsDTO(date, totalVentes, totalCout,benefice));
+        }
+
+        statsParJour.sort(Comparator.comparing(CommandeJourStatsDTO::getDateCommande));
+
 
         if (startDate != null && endDate != null) {
             commandes = commandeRepository.findByDateCommandeBetween(startDate, endDate);
@@ -104,6 +146,11 @@ public class CommandeService {
         response.put("montantLivrees", montantLivrees);
         response.put("montantNonLivrees", montantNonLivrees);
         response.put("nonLivreesAnciennes", nonLivreesAnciennes);
+        response.put("statsParJour", statsParJour);
+        response.put("totalVentes", statsParJour.stream().mapToDouble(CommandeJourStatsDTO::getTotalVentes).sum());
+        response.put("totalCout", statsParJour.stream().mapToDouble(CommandeJourStatsDTO::getTotalCout).sum());
+        response.put("beneficeTotal", statsParJour.stream().mapToDouble(CommandeJourStatsDTO::getBenefice).sum());
+
         return response;
     }
 
