@@ -59,6 +59,19 @@ public class Commande {
         this.client = client;
     }
 
+    public Commande(Long id, String designation, double quantite, double prixUnitaire, double prixTotal, LocalDate dateCommande, LocalDate dateLivraison, StatutCommande statut, Client client, List<LigneCommande> lignes) {
+        this.id = id;
+        this.designation = designation;
+        this.quantite = quantite;
+        this.prixUnitaire = prixUnitaire;
+        this.prixTotal = prixTotal;
+        this.dateCommande = dateCommande;
+        this.dateLivraison = dateLivraison;
+        this.statut = statut;
+        this.client = client;
+        this.lignes = lignes;
+    }
+
     public Long getId() {
         return id;
     }
