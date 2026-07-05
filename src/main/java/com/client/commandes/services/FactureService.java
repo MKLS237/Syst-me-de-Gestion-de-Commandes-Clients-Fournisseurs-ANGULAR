@@ -45,8 +45,8 @@ public class FactureService {
     public List<Facture> getAll() {
         return factureRepository.findAll().stream()
                 .peek(f -> {
-                    if (f.getCommande() != null) {
-                        f.getCommande().getClient().getNom(); // Force chargement lazy
+                    if (f.getClient() == null && f.getCommande() != null) {
+                        f.setClient(f.getCommande().getClient());
                     }
                 })
                 .collect(Collectors.toList());

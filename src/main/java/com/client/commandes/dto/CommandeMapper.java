@@ -11,12 +11,15 @@ public class CommandeMapper {
         CommandeDto dto = new CommandeDto();
         dto.setId(commande.getId());
 
-        // On mappe aussi le client
-        Client clientDto = new Client();
-        clientDto.setId(commande.getClient().getId());
-        clientDto.setNom(commande.getClient().getNom());
-        clientDto.setPrenom(commande.getClient().getPrenom());
-        dto.setClient(clientDto);
+        if (commande.getClient() != null) {
+            Client clientDto = new Client();
+            clientDto.setId(commande.getClient().getId());
+            clientDto.setNom(commande.getClient().getNom());
+            clientDto.setPrenom(commande.getClient().getPrenom());
+            clientDto.setEmail(commande.getClient().getEmail());
+            clientDto.setTelephone(commande.getClient().getTelephone());
+            dto.setClient(clientDto);
+        }
 
         dto.setDesignation(commande.getDesignation());
         dto.setQuantite(commande.getQuantite());

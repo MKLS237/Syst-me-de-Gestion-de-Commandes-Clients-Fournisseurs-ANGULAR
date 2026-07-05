@@ -41,6 +41,8 @@ public class Commande {
     private Client client;
 
 
+    @Builder.Default
+    @JsonIgnore
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LigneCommande> lignes = new ArrayList<>();
 
