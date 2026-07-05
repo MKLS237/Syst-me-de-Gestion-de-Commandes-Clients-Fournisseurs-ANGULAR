@@ -25,6 +25,7 @@ public class Facture {
 
     private double montantTotal;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private StatutFacture statut = StatutFacture.NON_PAYEE;
 

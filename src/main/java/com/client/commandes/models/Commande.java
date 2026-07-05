@@ -41,6 +41,8 @@ public class Commande {
     private Client client;
 
 
+    @Builder.Default
+    @JsonIgnore
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LigneCommande> lignes = new ArrayList<>();
 
@@ -57,6 +59,19 @@ public class Commande {
         this.dateLivraison = dateLivraison;
         this.statut = statut;
         this.client = client;
+    }
+
+    public Commande(Long id, String designation, double quantite, double prixUnitaire, double prixTotal, LocalDate dateCommande, LocalDate dateLivraison, StatutCommande statut, Client client, List<LigneCommande> lignes) {
+        this.id = id;
+        this.designation = designation;
+        this.quantite = quantite;
+        this.prixUnitaire = prixUnitaire;
+        this.prixTotal = prixTotal;
+        this.dateCommande = dateCommande;
+        this.dateLivraison = dateLivraison;
+        this.statut = statut;
+        this.client = client;
+        this.lignes = lignes;
     }
 
     public Long getId() {

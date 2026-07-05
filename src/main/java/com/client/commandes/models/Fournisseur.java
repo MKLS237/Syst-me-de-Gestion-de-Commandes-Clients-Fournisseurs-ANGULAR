@@ -1,6 +1,6 @@
 package com.client.commandes.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
@@ -27,8 +27,9 @@ public class Fournisseur {
     private String email;
     private String entreprise;
 
+    @Builder.Default
     @OneToMany(mappedBy = "fournisseur", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnore
     private List<ProduitFournisseur> produitsFournis = new ArrayList<>();
 
     public Fournisseur() {
