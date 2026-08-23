@@ -7,7 +7,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {
+        "http://localhost:4200",
+        "https://gestion-de-commandes-clients.onrender.com"
+})
 @RestController
 @RequestMapping("/api/produit")
 

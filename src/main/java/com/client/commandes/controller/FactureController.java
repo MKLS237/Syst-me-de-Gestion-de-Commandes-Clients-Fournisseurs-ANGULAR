@@ -16,7 +16,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/factures")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {
+        "http://localhost:4200",
+        "https://gestion-de-commandes-clients.onrender.com"
+})
 public class FactureController {
 
     private final FactureService factureService;
