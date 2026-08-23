@@ -15,10 +15,10 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("API Gestion Clients & Commandes")
                         .version("1.0")
-                        .description("Documentation de l'API REST avec Swagger / OpenAPI")
+                        .description("Développé par KING DIGITAL SERVICE")
                         .contact(new Contact()
-                                .name("Ton Nom")
-                                .email("ton.email@example.com")
+                                .name("Service King digital")
+                                .email("servicekingdigital1@gmail.com")
                                 .url("https://ton-site-web.com")
                         )
                 );
