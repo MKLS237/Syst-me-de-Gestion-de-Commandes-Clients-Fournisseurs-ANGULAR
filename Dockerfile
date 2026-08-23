@@ -26,4 +26,4 @@ EXPOSE 8081
 ENV PORT=8081
 
 # Commande pour lancer l'application
-ENTRYPOINT ["java", "-Dserver.port=${PORT}", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
