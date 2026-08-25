@@ -20,10 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/commandes")
-@CrossOrigin(origins = {
-        "http://localhost:4200",
-        "https://gestion-de-commandes-clients.onrender.com"
-})
+
 @Tag(name = "Commandes", description = "Gestion des commandes")
 public class CommandeController {
 
